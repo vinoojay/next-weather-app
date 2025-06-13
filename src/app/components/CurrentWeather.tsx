@@ -2,7 +2,7 @@
 
 import { Card } from "antd";
 import { useEffect, useState } from "react";
-import { GetCurrentWeather } from "../api/api";
+import { GetForecast } from "../api/api";
 
 export default function CurrentWeather() {
   const location = "colombo";
@@ -11,25 +11,20 @@ export default function CurrentWeather() {
 
   useEffect(() => {
     fetchWeatherData();
-    console.log("aaa", currentWeather);
-    // const aa = GetCurrentWeather(location);
-    // console.log("test data",aa)
   }, []);
 
   async function fetchWeatherData() {
     try {
-      GetCurrentWeather(location).then((data) => {
+        GetForecast(location).then((data) => {
         setCurrentWeather(data);
         setLoading(false);
-        console.log("test  2", data);
+        console.log("current weather", data);
       });
     } catch (error) {
       console.log("Error occured", error);
     }
   }
-  if (loading) {
-    return <p>Loading data...</p>;
-  }
+  if (loading) return <p>Loading data...</p>;
 
   return (
     <Card
@@ -49,6 +44,7 @@ export default function CurrentWeather() {
           <p>Current UV index: {currentWeather.current.uv}</p>
           <p>Current wind direction: {currentWeather.current.wind_dir}</p>
           <p>Condition: {currentWeather.current.condition.text}</p>
+          <p>Air quality: {currentWeather.current.air_quality["us-epa-index"]}</p>
         </>
       )}
     </Card>
