@@ -1,32 +1,29 @@
 import { create } from 'zustand'
 
-// export type Location = {
-//     name:string,
-//     region: string,
-//     country: string,
-//     lat?: number,
-//     lon?: number
-// }
+export type City = {
+    name:string,
+    region: string,
+    country: string,
+    lat?: number,
+    lon?: number,
+    id: number
+}
 
-// const defaultLocation: Location = {
-//     name: 'Colombo',
-//     region: 'Western',
-//     country: 'Sri Lanka'
-// }
+export const defaultLocation: City = {
+    name: 'Colombo',
+    region: 'Western',
+    country: 'Sri Lanka',
+    id: 2842281,
+    lat: 6.93,
+    lon: 79.85,
+}
 
 type LocationState = {
-    currentLocation: string | number,
-    setLocation: (location: string ) => void,
-    setLocationById: (location: number) => void
-    // clearLocation: () => void;
+    currentLocation: City,
+    setLocation: (location: City ) => void,
   }
 
 export const useLocationStore = create<LocationState>((set) => ({
-    currentLocation: "", // initial state
-    setLocation: (location) => set({ currentLocation: location}),
-    setLocationById: (location) => set({ currentLocation: location})
-    // clearLocation: () => set({ currentLocation : null })
+    currentLocation: defaultLocation, // initial state
+    setLocation: (location) => set({ currentLocation: location})
 }))
-
-// note - need to pass lat & lon when setting location
-

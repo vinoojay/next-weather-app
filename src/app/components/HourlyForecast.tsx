@@ -4,12 +4,20 @@ import { Card } from "antd";
 import { useEffect, useState } from "react";
 import { GetForecast } from "../api/api";
 import Image from "next/image";
-import { useLocationStore } from "../store";
+import { useLocationStore, City } from "../store";
+
+interface HourlyData {
+    time: string;
+    temp_c: number;
+    condition: {
+        icon: string;
+    };
+}
 
 export default function HourlyForecast(){
-    // const location = "colombo";
-    const currentLocation = useLocationStore((state) => state.currentLocation)
-    const[hourlyForecast, setHourlyForecast] = useState([]);
+
+    const currentLocation = useLocationStore((state) => state.currentLocation) as City
+    const[hourlyForecast, setHourlyForecast] = useState<HourlyData[]>([]);
     const[loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,9 +26,9 @@ export default function HourlyForecast(){
 
     async function fetchForecastData(){
         try {
-            GetForecast(currentLocation as string).then((data) => {
-                data = data.forecast.forecastday[0].hour;
-                setHourlyForecast(data) 
+            GetForecast(currentLocation.id).then((data) => {
+                const hourlyData = data.forecast.forecastday[0].hour;
+                setHourlyForecast(hourlyData) 
                 setLoading(false)
             })          
         } catch (error) {
@@ -30,8 +38,6 @@ export default function HourlyForecast(){
     }
 
     if(loading) return <p>Loading data...</p>;
-
-    // console.log("forecast h", hourlyForecast);
 
     return(
         <Card title="Hourly Forecast" variant="outlined" className="w-1/2" style={{ margin: 30 }}>

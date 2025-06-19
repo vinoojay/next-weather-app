@@ -3,32 +3,21 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
 import { SearchLocation } from "../api/api";
-import { useLocationStore } from "../store";
-// import type { Location } from '../store'
-
-
-type City = {
-    name: string;
-    id: number;
-    region: string;
-    country: string;
-    lat: number;
-    lon: number;
-}
+import { useLocationStore, City, defaultLocation } from "../store";
 
 export default function SearchBar(){
-    const[options, setOptions] = useState<{ label: string; value: string }[]>([])
+    const[options, setOptions] = useState<City[]>([])
     const[location, setLocation] = useState("")
     const setGlobalLocation = useLocationStore((state) => state.setLocation)
 
     useEffect(() => {
-        setGlobalLocation("dubai")
+        setGlobalLocation(defaultLocation)
     }, [setGlobalLocation])
 
     const onChange = (value: string) => {
         setLocation(value)
-        const selectedCity = options.find((opt) => opt.id == value)
-        if (selectedCity) setGlobalLocation(selectedCity.name)
+        const selectedCity = options.find((opt) => String(opt.id) == value)
+        if (selectedCity) setGlobalLocation(selectedCity)
             console.log("selected-city", selectedCity)
     };
 
@@ -42,8 +31,6 @@ export default function SearchBar(){
         fetchCityData()
     }, [location])
 
-
-    // location - 'kandy'
     async function fetchCityData(){
         if(location){
             SearchLocation(location).then((data) =>{

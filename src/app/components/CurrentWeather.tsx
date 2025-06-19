@@ -4,7 +4,7 @@ import { Card, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { GetForecast } from "../api/api";
 import Image from "next/image";
-import { useLocationStore } from "../store";
+import { useLocationStore, City } from "../store";
 
 type WeatherData = {
   location: {
@@ -27,7 +27,7 @@ type WeatherData = {
 
 export default function CurrentWeather() {
 
-  const currentLocation = useLocationStore((state) => state.currentLocation)
+  const currentLocation = useLocationStore((state) => state.currentLocation) as City
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +38,7 @@ export default function CurrentWeather() {
   async function fetchWeatherData() {
     try {
       // setLoading(true)
-      GetForecast(currentLocation as string).then((data) => {
+      GetForecast(currentLocation.id).then((data) => {
         setCurrentWeather(data);
         setLoading(false);
       });

@@ -3,11 +3,11 @@
 import { Card } from "antd";
 import { useEffect, useState } from "react";
 import { GetForecast } from "../api/api";
-import { useLocationStore } from "../store";
+import { useLocationStore, City } from "../store";
 
 export default function WeeklyWeather(){
-    // const location = "colombo";
-    const currentLocation = useLocationStore((state) => state.currentLocation)
+
+    const currentLocation = useLocationStore((state) => state.currentLocation) as City
     const[weeklyForecast, setWeeklyForecast] = useState([]);
     const[loading, setLoading] = useState(true);
 
@@ -17,7 +17,7 @@ export default function WeeklyWeather(){
 
     async function fetchWeeklyData(){
         try {
-            GetForecast(currentLocation as string).then((data) => {
+            GetForecast(currentLocation.id).then((data) => {
                 data = data.forecast.forecastday;
                 setWeeklyForecast(data);
                 setLoading(false);
