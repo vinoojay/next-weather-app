@@ -1,6 +1,6 @@
 'use client'
 
-import { Select } from "antd";
+import { Select, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { SearchLocation } from "../api/api";
 import { useLocationStore, City, defaultLocation } from "../store";
@@ -9,9 +9,11 @@ export default function SearchBar(){
     const[options, setOptions] = useState<City[]>([])
     const[location, setLocation] = useState("")
     const setGlobalLocation = useLocationStore((state) => state.setLocation)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         setGlobalLocation(defaultLocation)
+        setLoading(false)
     }, [setGlobalLocation])
 
     const onChange = (value: string) => {
@@ -35,10 +37,12 @@ export default function SearchBar(){
         if(location){
             SearchLocation(location).then((data) =>{
                 setOptions(data)
-                console.log("SearchLocation api", data)
+                setLoading(false);
             })
         }
     }
+    
+    if (loading) return <div className="flex justify-center items-center h-64"><Spin size="large" /></div>;
 
     const filter = options.map((city) => ({
         label: `${city.name}, ${city.region}, ${city.country}`,
@@ -46,7 +50,7 @@ export default function SearchBar(){
     }))
 
     return(
-        <div className="m-8 w-full">
+        <div className="search py-4 pt-4 w-full">
             <Select
                 showSearch
                 placeholder="Search Location"

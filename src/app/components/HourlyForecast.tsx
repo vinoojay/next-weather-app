@@ -1,18 +1,11 @@
 'use client'
 
-import { Card } from "antd";
+import { Card, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { GetForecast } from "../api/api";
-import Image from "next/image";
 import { useLocationStore, City } from "../store";
-
-interface HourlyData {
-    time: string;
-    temp_c: number;
-    condition: {
-        icon: string;
-    };
-}
+import AreaChartComponent from "./AreaChart";
+import { HourlyData } from "../weatherTypes";
 
 export default function HourlyForecast(){
 
@@ -28,7 +21,9 @@ export default function HourlyForecast(){
         try {
             GetForecast(currentLocation.id).then((data) => {
                 const hourlyData = data.forecast.forecastday[0].hour;
-                setHourlyForecast(hourlyData) 
+                const filteredHourlyData= hourlyData.map
+                    ((h) => {return {hour: new Date(h.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), degree: h.temp_c}} )
+                setHourlyForecast(filteredHourlyData) 
                 setLoading(false)
             })          
         } catch (error) {
@@ -37,28 +32,14 @@ export default function HourlyForecast(){
         }
     }
 
-    if(loading) return <p>Loading data...</p>;
+    if (loading) return <div className="flex justify-center items-center h-64"><Spin size="large" /></div>;
 
     return(
-        <Card title="Hourly Forecast" variant="outlined" className="w-1/2" style={{ margin: 30 }}>
-            <div className="flex overflow-x-auto">
-                {hourlyForecast.map(h => (
-                        <div key={h.time} className="p-4 text-xs"><p>{new Date(h.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
-                        <div>
-                            <Image
-                                src={`https:${h.condition.icon}`}
-                                alt="img"
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-                        <div>{h.temp_c}°C</div>
-                    </div>
-                ))}
-            </div>
-                {/* {hourlyForecast.map(h => (
-                    <li key={h.time}>{new Date(h.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} = {h.temp_c}°C</li>
-                ))} */}
+
+        <Card title="Hourly Forecast" variant="outlined" className="hourly-forecast w-full">
+            <div> 
+                <AreaChartComponent data={hourlyForecast}/>
+            </div> 
         </Card>
     )
 }

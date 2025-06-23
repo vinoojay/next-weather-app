@@ -1,43 +1,48 @@
 "use client";
 
-import { Card, Tag } from "antd";
+import { Card, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { GetForecast } from "../api/api";
 import Image from "next/image";
 import { useLocationStore, City } from "../store";
+import { CurrentWeatherData } from "../weatherTypes";
 
-type WeatherData = {
-  location: {
-      name: string;
-      localtime: string;
-  };
-  current: {
-      temp_c: number;
-      condition: {
-          text: string;
-          icon: string;
-      };
-      humidity: number;
-      wind_kph: number;
-      air_quality: {
-          "us-epa-index": number;
-      };
-  };
+function setAquiTag(index: number) {
+  switch (index) {
+    case 1:
+      return <Tag color="green">Good</Tag>;
+
+    case 2:
+      return <Tag color="gold">Moderate</Tag>;
+
+    case 3:
+      return <Tag color="yellow">Unhealthy for sensitive group</Tag>;
+
+    case 4:
+      return <Tag color="orange">Unhealthy</Tag>;
+
+    case 5:
+      return <Tag color="volcano">Very Unhealthy</Tag>;
+
+    case 6:
+      return <Tag color="red">Hazardous</Tag>;
+  }
 }
 
 export default function CurrentWeather() {
-
-  const currentLocation = useLocationStore((state) => state.currentLocation) as City
-  const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
+  const currentLocation = useLocationStore(
+    (state) => state.currentLocation
+  ) as City;
+  const [currentWeather, setCurrentWeather] = useState<CurrentWeatherData>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if(currentLocation) fetchWeatherData();
+    if (currentLocation) fetchWeatherData();
   }, [currentLocation]);
 
   async function fetchWeatherData() {
     try {
-      // setLoading(true)
+      setLoading(true);
       GetForecast(currentLocation.id).then((data) => {
         setCurrentWeather(data);
         setLoading(false);
@@ -46,45 +51,42 @@ export default function CurrentWeather() {
       console.log("Error occured", error);
     }
   }
-  if (loading) return <p>Loading data...</p>;
 
-  let aqi;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" />
+      </div>
+    );
+
   const airQualityIndex = currentWeather?.current?.air_quality["us-epa-index"];
-
-  switch (airQualityIndex) {
-    case 1:
-      aqi = <Tag color="green">Good</Tag>;
-      break;
-    case 2:
-      aqi = <Tag color="gold">Moderate</Tag>;
-      break;
-    case 3:
-      aqi = <Tag color="yellow">Unhealthy for sensitive group</Tag>;
-      break;
-    case 4:
-      aqi = <Tag color="orange">Unhealthy</Tag>;
-      break;
-    case 5:
-      aqi = <Tag color="volcano">Very Unhealthy</Tag>;
-      break;
-    case 6:
-      aqi = <Tag color="red">Hazardous</Tag>;
-      break;
-  }
+  const aqi = setAquiTag(airQualityIndex);
 
   return (
-    <Card
-     
-      variant="outlined"
-      className="w-1/2"
-      style={{ margin: 30 }}
-    >
+    <Card variant="outlined" className="current-weather w-full">
       {currentWeather && (
         <div className="grid grid-cols-2">
           <div>
             <div>
               <p className="text-2xl">{currentWeather.location?.name}</p>
-              <p>{new Date(currentWeather.location?.localtime).toLocaleString('en-US', { weekday: "long" })}, {new Date(currentWeather.location?.localtime).toLocaleString('en-US', { month: 'short', day: '2-digit' })} | {new Date(currentWeather.location?.localtime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+              <p>
+                {new Date(currentWeather.location?.localtime).toLocaleString(
+                  "en-US",
+                  { weekday: "long" }
+                )}
+                ,{" "}
+                {new Date(currentWeather.location?.localtime).toLocaleString(
+                  "en-US",
+                  { month: "short", day: "2-digit" }
+                )}{" "}
+                |{" "}
+                {new Date(
+                  currentWeather.location?.localtime
+                ).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
             </div>
             <div className="flex mt-8">
               <Image
@@ -94,9 +96,15 @@ export default function CurrentWeather() {
                 height={70}
               />
               <div className="content-center ml-2">
-                <p className="text-3xl">{currentWeather.current?.temp_c}<sup className="text-lg">°C</sup></p>
+                <p className="text-3xl">
+                  {currentWeather.current?.temp_c}
+                  <sup className="text-lg">°C</sup>
+                </p>
               </div>
             </div>
+            <p className="text-gray-600">
+              feels like {currentWeather.current.feelslike_c}°C
+            </p>
             <div className="mt-4 text-lg">
               <p>{currentWeather.current.condition?.text}</p>
             </div>
@@ -106,13 +114,14 @@ export default function CurrentWeather() {
             <div className="flex px-2">
               <span className="px-2 content-center">
                 <Image
-                  src="/icons/humidity-1.png"
+                  src="/icons/humidity.png"
                   alt="img"
                   width={20}
                   height={20}
                 />
               </span>
-              <span>{currentWeather.current?.humidity}% </span></div>
+              <span>{currentWeather.current?.humidity}% </span>
+            </div>
             <div className="flex px-2">
               <span className="px-2 content-center">
                 <Image
@@ -121,17 +130,43 @@ export default function CurrentWeather() {
                   width={20}
                   height={20}
                 />
-              </span>  {currentWeather.current?.wind_kph} km/h</div>
-            <div className="flex px-2">
+              </span>{" "}
+              {currentWeather.current?.wind_kph} km/h
+            </div>
+            <div className="flex p-2">
               <span className="px-2 content-center">
                 <Image
-                  src="/icons/air-quality-1.png"
+                  src="/icons/air-quality.png"
                   alt="img"
                   width={20}
                   height={20}
                 />
               </span>
-               {aqi}</div> 
+              {aqi}
+            </div>
+            <div className="flex text-sm pt-8 px-2 gap-4">
+              <div className="flex flex-col items-center flex-1">
+                <span className="mb-1">Sunrise Today</span>
+                <Image
+                  src="/icons/sunrise.png"
+                  alt="Sunrise"
+                  width={40}
+                  height={40}
+                />
+                <p>{currentWeather.forecast?.forecastday[0].astro.sunrise}</p>
+              </div>
+
+              <div className="flex flex-col items-center flex-1">
+                <span className="mb-1">Sunset Today</span>
+                <Image
+                  src="/icons/sunset.png"
+                  alt="Sunset"
+                  width={40}
+                  height={40}
+                />
+                <p>{currentWeather.forecast?.forecastday[0].astro.sunset}</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
