@@ -15,43 +15,31 @@ export default function Home() {
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsFetching(false);
-    }, 3000);
+    navigator.geolocation.getCurrentPosition(getWeatherByLocation, getWeatherByIp);
   }, []);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(getWeatherByLocation, getWeatherByIp);
+  // If user allows location access, the app updates the weather data according to the user's current location
+    async function getWeatherByLocation(position: {coords: { latitude: number; longitude: number };}) {
+    const lat = position?.coords?.latitude;
+    const lon = position?.coords?.longitude;
 
-    // If user allows location access, the app updates the weather data according to the user's current location
-    async function getWeatherByLocation(position: {coords: { latitude: number; longitude: number }}) {
-      const lat = position?.coords?.latitude;
-      const lon = position?.coords?.longitude;
+    const locationParam = `${lat},${lon}`;
 
-      const locationParam = lat && lon ? `${lat},${lon}` : "auto:ip";
+    // current location weather forecast
+    const data = await GetForecastByCoords(locationParam);
 
-      // current location weather forecast
-      const data = await GetForecastByCoords(locationParam);
+    setLocation(data);
+    setIsFetching(false);
+  };
 
-      setLocation({
-        lat: data.location.lat,
-        lon: data.location.lon,
-      });
-    }
-
-    // If user does not allows location access, API will return data based on users IP 
+  // If user does not allows location access, API will return data based on users IP 
     async function getWeatherByIp(){
 
-      const locationParam = "auto:ip";
-      const data = await GetForecastByCoords(locationParam);
-
-      setLocation({
-        lat: data.location.lat,
-        lon: data.location.lon,
-      });
-    }
-
-  }, []);
+    const locationParam = "auto:ip";
+    const data = await GetForecastByCoords(locationParam);
+    setLocation(data);
+    setIsFetching(false);
+  };
 
   if (isFetching) {
     return (
@@ -67,11 +55,17 @@ export default function Home() {
         <SearchBar />
         <div className="flex gap-4 h-full">
           <div className="flex flex-col gap-4 w-2/3 h-full">
-            {currentLocation && <CurrentWeather currentLocation={currentLocation} />}
-            {currentLocation && <HourlyForecast currentLocation={currentLocation} />}
+            {currentLocation && (
+              <CurrentWeather weatherData={currentLocation} />
+            )}
+            {currentLocation && (
+              <HourlyForecast forecast={currentLocation.forecast} />
+            )}
           </div>
           <div className="w-1/3 h-full">
-            {currentLocation && <DailyForecast currentLocation={currentLocation} />}
+            {currentLocation && (
+              <DailyForecast forecast={currentLocation.forecast} />
+            )}
           </div>
         </div>
       </div>

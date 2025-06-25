@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { City } from "./weatherTypes";
+import { WeatherApiResponse } from "./weatherTypes";
 
 type LocationState = {
-  currentLocation: City | undefined;
-  setLocation: (location: City) => void;
+  currentLocation: WeatherApiResponse;
+  setLocation: (location: WeatherApiResponse) => void;
 };
 
 export const useLocationStore = create<LocationState>((set) => ({

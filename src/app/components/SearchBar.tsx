@@ -2,17 +2,25 @@
 
 import { Select } from "antd";
 import { useState } from "react";
-import { SearchLocation } from "../api/api";
+import { GetForecastByCoords, SearchLocation } from "../api/api";
 import { useLocationStore } from "../store";
-import { City } from "../weatherTypes";
+import { LocationData } from "../weatherTypes";
 
 export default function SearchBar() {
-  const [options, setOptions] = useState<City[]>([]);
-  const setLocation  = useLocationStore((state) => state.setLocation);
+  const [options, setOptions] = useState<LocationData[]>([]);
+  const { setLocation } = useLocationStore((state) => state);
 
-  const onChange = (value: string) => {
+  const onChange = async (value: string) => {
     const selectedCity = options.find((opt) => String(opt.id) == value);
-    if (selectedCity) setLocation(selectedCity);
+    if (selectedCity) {
+      const lat = selectedCity?.lat;
+      const lon = selectedCity?.lon;
+
+      const locationParam = `${lat},${lon}`;
+      const data = await GetForecastByCoords(locationParam);
+
+      setLocation(data);
+    }
   };
 
   const onSearch = (value: string) => {
