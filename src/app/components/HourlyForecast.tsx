@@ -15,6 +15,7 @@ export default function HourlyForecast({currentLocation} : CurrentLocationProps)
     }, [currentLocation])
 
     async function fetchForecastData(){
+        
         const lat = currentLocation.lat;
         const lon = currentLocation.lon;
         const locationParam = `${lat},${lon}`
