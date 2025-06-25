@@ -60,7 +60,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - **Next.js 15**
 - **React 19**
-- **Tailwind CSS 4** (with dark mode support)
+- **Tailwind CSS 4**
 - **Ant Design 5**
 - **Recharts** (for charts)
 - **Zustand** (state management)
