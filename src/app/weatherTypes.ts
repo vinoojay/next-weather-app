@@ -1,3 +1,16 @@
+export interface City {
+    name?:string,
+    region?: string,
+    country?: string,
+    id?: number,
+    lat: number,
+    lon: number
+}
+
+export interface CurrentLocationProps {
+  currentLocation: City;
+}
+
 export interface HourlyData {
     hour: string;
     degree: number;
@@ -20,6 +33,7 @@ export interface CurrentWeatherData {
     air_quality: {
       "us-epa-index": number;
     };
+    uv: number;
   };
   forecast: {
     forecastday: {
@@ -32,7 +46,7 @@ export interface CurrentWeatherData {
 };
 
 
-export interface WeeklyForecast {
+export interface DailyForecastData {
   date: string;
   date_epoch: number;
   day: {

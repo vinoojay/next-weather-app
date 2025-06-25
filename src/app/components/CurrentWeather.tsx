@@ -1,66 +1,52 @@
 "use client";
 
-import { Card, Spin, Tag } from "antd";
+import { Card, Tag } from "antd";
 import { useEffect, useState } from "react";
-import { GetForecast } from "../api/api";
+import { GetForecastByCoords } from "../api/api";
 import Image from "next/image";
-import { useLocationStore, City } from "../store";
-import { CurrentWeatherData } from "../weatherTypes";
+import { CurrentWeatherData, CurrentLocationProps } from "../weatherTypes";
 
-function setAquiTag(index: number) {
+// Air Quality Index
+function setAqiTag(index: number | undefined) {
   switch (index) {
     case 1:
       return <Tag color="green">Good</Tag>;
-
     case 2:
       return <Tag color="gold">Moderate</Tag>;
-
     case 3:
       return <Tag color="yellow">Unhealthy for sensitive group</Tag>;
-
     case 4:
       return <Tag color="orange">Unhealthy</Tag>;
-
     case 5:
       return <Tag color="volcano">Very Unhealthy</Tag>;
-
     case 6:
       return <Tag color="red">Hazardous</Tag>;
+    default:
+      return <Tag color="default">Unknown</Tag>;
   }
 }
 
-export default function CurrentWeather() {
-  const currentLocation = useLocationStore(
-    (state) => state.currentLocation
-  ) as City;
+export default function CurrentWeather({currentLocation} : CurrentLocationProps) {
+
   const [currentWeather, setCurrentWeather] = useState<CurrentWeatherData>();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (currentLocation) fetchWeatherData();
   }, [currentLocation]);
 
+
   async function fetchWeatherData() {
-    try {
-      setLoading(true);
-      GetForecast(currentLocation.id).then((data) => {
-        setCurrentWeather(data);
-        setLoading(false);
-      });
-    } catch (error) {
-      console.log("Error occured", error);
-    }
+
+    const lat = currentLocation.lat;
+    const lon = currentLocation.lon;
+    const locationParam = `${lat},${lon}`
+
+    const data = await GetForecastByCoords(locationParam);
+    setCurrentWeather(data);
   }
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" />
-      </div>
-    );
-
   const airQualityIndex = currentWeather?.current?.air_quality["us-epa-index"];
-  const aqi = setAquiTag(airQualityIndex);
+  const aqi = setAqiTag(airQualityIndex);
 
   return (
     <Card variant="outlined" className="current-weather w-full">
@@ -70,22 +56,11 @@ export default function CurrentWeather() {
             <div>
               <p className="text-2xl">{currentWeather.location?.name}</p>
               <p>
-                {new Date(currentWeather.location?.localtime).toLocaleString(
-                  "en-US",
-                  { weekday: "long" }
-                )}
+                {new Date(currentWeather.location?.localtime).toLocaleString("en-US",{ weekday: "long" })}
                 ,{" "}
-                {new Date(currentWeather.location?.localtime).toLocaleString(
-                  "en-US",
-                  { month: "short", day: "2-digit" }
-                )}{" "}
-                |{" "}
-                {new Date(
-                  currentWeather.location?.localtime
-                ).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {new Date(currentWeather.location?.localtime).toLocaleString("en-US",{ month: "short", day: "2-digit" })}
+                {" "} |{" "}
+                {new Date(currentWeather.location?.localtime).toLocaleTimeString("en-US", {hour: "2-digit",minute: "2-digit",})}
               </p>
             </div>
             <div className="flex mt-8">
@@ -111,7 +86,7 @@ export default function CurrentWeather() {
           </div>
 
           <div className="text-base/8">
-            <div className="flex px-2">
+            <div className="humidity flex px-2">
               <span className="px-2 content-center">
                 <Image
                   src="/icons/humidity.png"
@@ -122,7 +97,7 @@ export default function CurrentWeather() {
               </span>
               <span>{currentWeather.current?.humidity}% </span>
             </div>
-            <div className="flex px-2">
+            <div className="wind-speed flex px-2">
               <span className="px-2 content-center">
                 <Image
                   src="/icons/windy.png"
@@ -133,7 +108,7 @@ export default function CurrentWeather() {
               </span>{" "}
               {currentWeather.current?.wind_kph} km/h
             </div>
-            <div className="flex p-2">
+            <div className="air-quality flex p-2">
               <span className="px-2 content-center">
                 <Image
                   src="/icons/air-quality.png"
@@ -143,6 +118,17 @@ export default function CurrentWeather() {
                 />
               </span>
               {aqi}
+            </div>
+            <div className="uv-index flex px-2">
+              <span className="px-2 content-center">
+                <Image
+                  src="/icons/uv-index.png"
+                  alt="img"
+                  width={20}
+                  height={20}
+                />
+              </span>
+              {currentWeather.current.uv}
             </div>
             <div className="flex text-sm pt-8 px-2 gap-4">
               <div className="flex flex-col items-center flex-1">

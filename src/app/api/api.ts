@@ -1,16 +1,15 @@
-// max 2 weeks
-export function GetForecast(locationId: number){
+import { City } from "../weatherTypes";
 
-    const res = fetch(`${process.env.NEXT_PUBLIC_API_URL}/forecast.json?key=${process.env.NEXT_PUBLIC_API_KEY}&q=id:${locationId}&days=10&aqi=yes`).then((res) => res.json())
-  
+export function GetForecastByCoords(param: string) {
+  const res = fetch(`${process.env.NEXT_PUBLIC_API_URL}/forecast.json?key=${process.env.NEXT_PUBLIC_API_KEY}&q=${param}&days=10&aqi=yes`).then((res) => res.json());
 
-    return res;
+  return res;
 }
 
-export function SearchLocation(location: string){
+export function SearchLocation(location: string): Promise<City[]> {
+  const res = fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/search.json?key=${process.env.NEXT_PUBLIC_API_KEY}&q=${location}`
+  ).then((res) => res.json());
 
-    const res = fetch(`${process.env.NEXT_PUBLIC_API_URL}/search.json?key=${process.env.NEXT_PUBLIC_API_KEY}&q=${location}`).then((res) => res.json())
-  
-
-    return res;
+  return res;
 }
