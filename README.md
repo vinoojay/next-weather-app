@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weather LK
+
+A modern weather forecast app for any city or region worldwide, built with Next.js, React, Zustand, Tailwind CSS, and Ant Design.  
+Get current weather, hourly and 10-day forecasts, air quality, and more instantly, based on your location or search.
+
+---
+
+## Features
+
+- **Current Weather:** See real-time temperature, humidity, wind, UV index, and air quality for your location.
+- **Hourly Forecast:** Interactive chart of temperature trends for the day.
+- **10-Day Forecast:** Scrollable daily outlook with weather icons and summaries.
+- **Location Search:** Find weather for any city or region worldwide.
+- **Automatic Location:** Uses your device's geolocation or falls back to IP-based location.
+- **UI:** Clean design using Ant Design and Tailwind CSS..
+- **State Management:** Powered by Zustand for fast, simple state updates.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 2. Set up environment variables
+
+Create a `.env.local` file in the project root with your weather API credentials:
+
+```
+NEXT_PUBLIC_API_URL=https://your-weather-api-url
+NEXT_PUBLIC_API_KEY=your_api_key
+```
+
+### 3. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+- `npm run dev` — Start the development server
+- `npm run build` — Build for production
+- `npm start` — Start the production server
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Next.js 15**
+- **React 19**
+- **Tailwind CSS 4** (with dark mode support)
+- **Ant Design 5**
+- **Recharts** (for charts)
+- **Zustand** (state management)
+- **TypeScript**
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Customization
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Styling:** Tailwind CSS is used for rapid styling. You can easily add or modify styles in `src/app/globals.css`.
+- **Components:** All UI components are in `src/app/components/`.
+- **API:** Weather data is fetched from a configurable API (see `.env.local`).
+
+---
+
+## License
+
+This project is for educational and demonstration purposes.

@@ -4,10 +4,6 @@ import { Card, Tag } from "antd";
 import Image from "next/image";
 import { WeatherApiResponse } from "../weatherTypes";
 
-// interface ICurrentWeather {
-//   weatherData: WeatherApiResponse;
-// }
-
 export default function CurrentWeatherComponent(
   { weatherData }: { weatherData: WeatherApiResponse }
 ) {
