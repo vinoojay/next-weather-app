@@ -11,7 +11,7 @@ export default function DailyForecast({
 
   return (
     <Card
-      title="10 Day Forecast"
+      title={`${forecastDay.length} Day Forecast`}
       variant="outlined"
       className="daily-weather w-full h-[720px] overflow-y-auto"
     >
